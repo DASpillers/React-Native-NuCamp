@@ -3,13 +3,19 @@ import { Text, View, ScrollView, FlatList } from "react-native";
 import { Card, Icon } from "react-native-elements";
 import { connect } from "react-redux";
 import { baseUrl } from "../shared/baseUrl";
+import { postFavorite } from "../redux/ActionCreators";
 
 const mapStateToProps = (state) => {
   return {
     campsites: state.campsites,
     comments: state.comments,
+    favorites: state.favorites
   };
 };
+
+const mapDispatchToProps = {
+  postFavorite: campsiteId => (postFavorite(campsiteId))
+}
 
 function RenderCampsite(props) {
   const { campsite } = props;
@@ -72,7 +78,7 @@ class CampsiteInfo extends Component {
   }
 
   markFavorite() {
-    this.setState({ favorite: true });
+    this.props.postFavorite(campsiteId);
   }
 
   static navigationOptions = {
@@ -91,7 +97,7 @@ class CampsiteInfo extends Component {
       <ScrollView>
         <RenderCampsite
           campsite={campsite}
-          favorite={this.state.favorite}
+          favorite={this.props.favorites.includes(campsiteId)}
           markFavorite={() => this.markFavorite()}
         />
         <RenderComments comments={comments} />
