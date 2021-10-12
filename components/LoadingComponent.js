@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 
-Loading = () => {
+function Loading() {
   return (
     <View>
       <ActivityIndicator size="large" color="#5637DD" />

@@ -4,6 +4,7 @@ import Directory from "./DirectoryComponent";
 import About from "./AboutComponent";
 import Contact from "./ContactComponent";
 import CampsiteInfo from "./CampsiteInfoComponent";
+import Favorites from "./FavoritesComponent";
 import Constants from "expo-constants";
 import {
   View,
@@ -36,24 +37,51 @@ const mapDispatchToProps = {
 
 const ReservationNavigator = createStackNavigator(
   {
-    Reservation: { screen: Reservation }
+    Reservation: { screen: Reservation },
   },
   {
-    defaultNavigationOptions: ({navigation}) => ({
+    defaultNavigationOptions: ({ navigation }) => ({
       headerStyle: {
-        backgroundColor: '#5637DD'
+        backgroundColor: "#5637DD",
       },
-      headerTintColor: '#fff',
+      headerTintColor: "#fff",
       headerTitleStyle: {
-        color: '#fff'
+        color: "#fff",
       },
-      headerLeft: <Icon
-        name='tree'
-        type='font-awesome'
-        iconStyle={styles.stackIcon}
-        onPress={() => navigation.toggleDrawer()}
+      headerLeft: (
+        <Icon
+          name="tree"
+          type="font-awesome"
+          iconStyle={styles.stackIcon}
+          onPress={() => navigation.toggleDrawer()}
         />
-    })
+      ),
+    }),
+  }
+);
+
+const FavoritesNavigator = createStackNavigator(
+  {
+    Favorites: { screen: Favorites },
+  },
+  {
+    defaultNavigationOptions: ({ navigation }) => ({
+      headerStyle: {
+        backgroundColor: "#5637DD",
+      },
+      headerTintColor: "#fff",
+      headerTitleStyle: {
+        color: "#fff",
+      },
+      headerLeft: (
+        <Icon
+          name="heart"
+          type="font-awesome"
+          iconStyle={styles.stackIcon}
+          onPress={() => navigation.toggleDrawer()}
+        />
+      ),
+    }),
   }
 );
 
@@ -199,26 +227,25 @@ const MainNavigator = createDrawerNavigator(
       screen: DirectoryNavigator,
       navigationOptions: {
         drawerIcon: ({ tintColor }) => (
-          <Icon 
-            name="list" 
-            type="font-awesome" 
-            size={24} 
-            color={tintColor} 
-          />
+          <Icon name="list" type="font-awesome" size={24} color={tintColor} />
         ),
       },
     },
     Reservation: {
       screen: ReservationNavigator,
       navigationOptions: {
-        drawerLabel: 'Reserve Campsite',
+        drawerLabel: "Reserve Campsite",
         drawerIcon: ({ tintColor }) => (
-          <Icon
-            name="tree"
-            type="font-awesome"
-            size={24}
-            color={tintColor}
-          />
+          <Icon name="tree" type="font-awesome" size={24} color={tintColor} />
+        ),
+      },
+    },
+    Favorites: {
+      screen: FavoritesNavigator,
+      navigationOptions: {
+        drawerLabel: "My Favorites",
+        drawerIcon: ({ tintColor }) => (
+          <Icon name="heart" type="font-awesome" size={24} color={tintColor} />
         ),
       },
     },
