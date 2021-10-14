@@ -1,4 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
+import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import logger from "redux-logger";
 import { campsites } from "./campsites";
@@ -7,9 +7,20 @@ import { promotions } from "./promotions";
 import { partners } from "./partners";
 import { favorites } from "./favorites";
 
+//PERSIST. Add persistant support for reducers so they auto updadte the state to persistant storage.
+import { persistStore, persistCombineReducers } from "redux-persist";
+import storage from "redux-persist/es/storage"; //gives us access to local storage to our device. adds sotarge support
+
+const config = {
+  //configuartion values
+  key: "root", //requiredd
+  storage, //required and set to the storage object we import
+  debug: true, //optional. causes persist to consol log message to hellp debug issues
+};
+
 export const ConfigureStore = () => {
   const store = createStore(
-    combineReducers({
+    persistCombineReducers(config, {
       campsites,
       comments,
       partners,
@@ -19,5 +30,7 @@ export const ConfigureStore = () => {
     applyMiddleware(thunk, logger)
   );
 
-  return store;
+  const persistor = persistStore(store); //enables store to be persisted. Used in App.js
+
+  return { persistor, store }; //must be written like this to access both in App.JS
 };
