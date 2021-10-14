@@ -155,7 +155,7 @@ export const addPartners = (partners) => ({
   payload: partners,
 });
 
-export const postfavorite = (campsiteId) => (dispatch) => {
+export const postFavorite = (campsiteId) => (dispatch) => {
   setTimeout(() => {
     dispatch(addFavorite(campsiteId));
   }, 2000);

@@ -31,26 +31,50 @@ const mapDispatchToProps = {
 };
 
 function RenderCampsite(props) {
+
   const { campsite } = props;
 
+  const view = React.createRef();
+
   const recognizeDrag = ({ dx }) => (dx < -200 ? true : false); // take object and destructures dx: distance of a function across the X axis. True is value is less than -200;
-  
-  const panResponder = PanResponder.create({ //creates the pan
+
+  const panResponder = PanResponder.create({
+    //creates the pan
     onStartShouldSetPanResponder: () => true, //activates pan responder to gestures
-    onPanResponderEnd: (e, gestureState) => { //holds values automatically taksed into handler//e for event. cant get to gesture state without e
-      console.log("pan responder end", gestureState); //holds info about the gesture state
-      if (recognizeDrag(gestureState)) { //returns true if gestrue was more than 200 pixels to the left
-        Alert.alert( //activates if above if true to add a favorite
+    onPanResponderGrant: () => { //triggered when a gesture is first recognized
+      view.current //refers to the currently mounted instance of the component
+        .rubberBand(1000) //calling an animatable function as a method passing an argument of x  milliseconds
+        .then((endState) => //returns a promise object obtaining the end of the  animation
+          console.log(endState.finished ? "finished" : "canceled") //returns true if successful or false if it, for some reason wasn't successful
+        );
+    },
+    onPanResponderEnd: (e, gestureState) => {
+      //holds values automatically taksed into handler...e for event. cant get to gesture state without e
+      onPanResponderGrant: () => {
+        view.current
+          .rubberBand(1000)
+          .then((endState) =>
+            console.log(endState.finished ? "finished" : "canceled")
+          );
+      },
+        console.log("pan responder end", gestureState); //holds info about the gesture state
+      if (recognizeDrag(gestureState)) {
+        //returns true if gestrue was more than 200 pixels to the left
+        Alert.alert(
+          //activates if above if true to add a favorite
           "Add Favorite",
-          "Are you sure you wish to add " + campsite.name + " to favorites?", 
-          [ //holds object for the alert buttons
-            { //set up for cancel button
+          "Are you sure you wish to add " + campsite.name + " to favorites?",
+          [
+            //holds object for the alert buttons
+            {
+              //set up for cancel button
               text: "Cancel",
               style: "cancel",
               onPress: () => console.log("Cancel Pressed"), //console logs a message for cancel
             },
-            { //okays the add to favorite
-              text: "OK", 
+            {
+              //okays the add to favorite
+              text: "OK",
               onPress: () =>
                 props.favorite //checks if it is already a favorite
                   ? console.log("Already set as a favorite")
@@ -66,10 +90,11 @@ function RenderCampsite(props) {
 
   if (campsite) {
     return (
-      <Animatable.View 
-        animation="fadeInDown" 
-        duration={2000} 
+      <Animatable.View
+        animation="fadeInDown"
+        duration={2000}
         delay={1000}
+        ref={view} //usedd to set up an animation using pan respondder
         {...panResponder.panHandlers} //spreadd syntax topass in the pan handdlers props
       >
         <Card
@@ -171,7 +196,7 @@ class CampsiteInfo extends Component {
     });
   }
 
-  markFavorite() {
+  markFavorite(campsiteId) {
     this.props.postFavorite(campsiteId);
   }
 
@@ -192,7 +217,7 @@ class CampsiteInfo extends Component {
         <RenderCampsite
           campsite={campsite}
           favorite={this.props.favorites.includes(campsiteId)}
-          markFavorite={() => this.markFavorite()}
+          markFavorite={() => this.markFavorite(campsiteId)}
           onShowModal={() => this.toggleModal()}
         />
         <RenderComments comments={comments} />
