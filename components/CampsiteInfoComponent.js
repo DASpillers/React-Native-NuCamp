@@ -7,6 +7,8 @@ import {
   Modal,
   Button,
   StyleSheet,
+  Alert,
+  PanResponder,
 } from "react-native";
 import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
@@ -31,9 +33,45 @@ const mapDispatchToProps = {
 function RenderCampsite(props) {
   const { campsite } = props;
 
+  const recognizeDrag = ({ dx }) => (dx < -200 ? true : false); // take object and destructures dx: distance of a function across the X axis. True is value is less than -200;
+  
+  const panResponder = PanResponder.create({ //creates the pan
+    onStartShouldSetPanResponder: () => true, //activates pan responder to gestures
+    onPanResponderEnd: (e, gestureState) => { //holds values automatically taksed into handler//e for event. cant get to gesture state without e
+      console.log("pan responder end", gestureState); //holds info about the gesture state
+      if (recognizeDrag(gestureState)) { //returns true if gestrue was more than 200 pixels to the left
+        Alert.alert( //activates if above if true to add a favorite
+          "Add Favorite",
+          "Are you sure you wish to add " + campsite.name + " to favorites?", 
+          [ //holds object for the alert buttons
+            { //set up for cancel button
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => console.log("Cancel Pressed"), //console logs a message for cancel
+            },
+            { //okays the add to favorite
+              text: "OK", 
+              onPress: () =>
+                props.favorite //checks if it is already a favorite
+                  ? console.log("Already set as a favorite")
+                  : props.markFavorite(), //if it isn't, it will call the markFavorite event handler
+            },
+          ], //object to stop the user from tapping outside the alert box to close it
+          { cancelable: false }
+        );
+      }
+      return true; //finished the pan respondedr by returning true
+    },
+  });
+
   if (campsite) {
     return (
-      <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+      <Animatable.View 
+        animation="fadeInDown" 
+        duration={2000} 
+        delay={1000}
+        {...panResponder.panHandlers} //spreadd syntax topass in the pan handdlers props
+      >
         <Card
           featuredTitle={campsite.name}
           image={{ uri: baseUrl + campsite.image }}
