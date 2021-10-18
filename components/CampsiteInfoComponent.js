@@ -38,6 +38,8 @@ function RenderCampsite(props) {
 
   const recognizeDrag = ({ dx }) => (dx < -200 ? true : false); // take object and destructures dx: distance of a function across the X axis. True is value is less than -200;
 
+  const recognizeComment = ({dx}) => (dx > 200) ? true : false;
+
   const panResponder = PanResponder.create({
     //creates the pan
     onStartShouldSetPanResponder: () => true, //activates pan responder to gestures
@@ -84,7 +86,9 @@ function RenderCampsite(props) {
           { cancelable: false }
         );
       }
-      return true; //finished the pan respondedr by returning true
+      else if (recognizeComment(gestureState)) {props.onShowModal()};
+
+      return true; //finished the pan responder by returning true
     },
   });
 

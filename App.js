@@ -13,7 +13,7 @@ export default function App() {
     <Provider store={store}>
       <PersistGate        //MUST WRAP MAIN COMPONENT. HELPS INTEGRATE IT WITH REACT ANDD NATIVE APP. PREVENTS APP FROM RENDEDRING UNTIL THE REDUX STORE HAS REHYDDRATEDD FROM CLIENT SIDED STORAGE.
           loading={<Loading />} //THIS IS WHAT IS SHOWN WHILE REDUX STORE IS REHYDRATING
-          persistor={persistor}> //
+          persistor={persistor}> 
         <Main />
       </PersistGate>
     </Provider>
