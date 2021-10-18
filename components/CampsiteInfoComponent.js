@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Alert,
   PanResponder,
+  Share,
 } from "react-native";
 import { Card, Icon, Rating, Input } from "react-native-elements";
 import { connect } from "react-redux";
@@ -31,23 +32,25 @@ const mapDispatchToProps = {
 };
 
 function RenderCampsite(props) {
-
   const { campsite } = props;
 
   const view = React.createRef();
 
   const recognizeDrag = ({ dx }) => (dx < -200 ? true : false); // take object and destructures dx: distance of a function across the X axis. True is value is less than -200;
 
-  const recognizeComment = ({dx}) => (dx > 200) ? true : false;
+  const recognizeComment = ({ dx }) => (dx > 200 ? true : false);
 
   const panResponder = PanResponder.create({
     //creates the pan
     onStartShouldSetPanResponder: () => true, //activates pan responder to gestures
-    onPanResponderGrant: () => { //triggered when a gesture is first recognized
+    onPanResponderGrant: () => {
+      //triggered when a gesture is first recognized
       view.current //refers to the currently mounted instance of the component
         .rubberBand(1000) //calling an animatable function as a method passing an argument of x  milliseconds
-        .then((endState) => //returns a promise object obtaining the end of the  animation
-          console.log(endState.finished ? "finished" : "canceled") //returns true if successful or false if it, for some reason wasn't successful
+        .then(
+          (
+            endState //returns a promise object obtaining the end of the  animation
+          ) => console.log(endState.finished ? "finished" : "canceled") //returns true if successful or false if it, for some reason wasn't successful
         );
     },
     onPanResponderEnd: (e, gestureState) => {
@@ -85,12 +88,26 @@ function RenderCampsite(props) {
           ], //object to stop the user from tapping outside the alert box to close it
           { cancelable: false }
         );
+      } else if (recognizeComment(gestureState)) {
+        props.onShowModal();
       }
-      else if (recognizeComment(gestureState)) {props.onShowModal()};
 
       return true; //finished the pan responder by returning true
     },
   });
+
+  const shareCampsite = (title, message, url) => {
+    Share.share(
+      {
+        title: title,
+        message: `${title}: ${message} ${url}`,
+        url: url,
+      },
+      {
+        dialogTitle: "Share " + title,
+      }
+    );
+  };
 
   if (campsite) {
     return (
@@ -126,6 +143,20 @@ function RenderCampsite(props) {
               raised
               reverse
               onPress={() => props.onShowModal()}
+            />
+            <Icon
+              name={"share"}
+              type="font-awesome"
+              color="#5637DD"
+              raised
+              reverse
+              onPress={() =>
+                shareCampsite(
+                  campsite.name,
+                  campsite.description,
+                  baseUrl + campsite.image
+                )
+              }
             />
           </View>
         </Card>
